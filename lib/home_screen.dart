@@ -33,36 +33,25 @@ class _HomeScreenState extends State<HomeScreen> {
           ElevatedButton(
             onPressed: () async {
               var status = await Permission.camera.status;
-              if (status.isDenied) {
-                status = await Permission.camera.request();
-                if (status.isDenied) {
-                  showToast("Camera access denied");
-                } else if (status.isPermanentlyDenied) {
-                  showToast("Camera access permanently denied");
-                } else if (status.isGranted) {
-                  showToast("Camera access granted");
-                }
-              } else if (status.isGranted) {
+              if (status.isGranted) {
+                // Proceed with camera-related task
                 showToast("Camera access granted");
+              } else if (status.isDenied) {
+                // Request for permission to user
+                requestCameraPermission();
               }
             },
             child: const Text("Ask camera permission"),
           ),
           ElevatedButton(
             onPressed: () async {
+              // Now you can try this with storage permission.
               var status = await Permission.storage.status;
-              print(status.toString());
-              if (status.isDenied) {
-                status = await Permission.storage.request();
-                if (status.isDenied) {
-                  showToast("Storage access denied");
-                } else if (status.isPermanentlyDenied) {
-                  showToast("Storage access permanently denied");
-                } else if (status.isGranted) {
-                  showToast("Storage access granted");
-                }
-              } else if (status.isGranted) {
-                showToast("Storage access granted");
+              if(status.isGranted){
+                // Do next step for this
+              } else if(status.isGranted){
+                // Request for storage permission
+                requestStoragePermission();
               }
             },
             child: const Text("Ask storage permission"),
@@ -70,6 +59,32 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+
+  requestStoragePermission() async {
+    var status = await Permission.storage.request();
+    if(status.isGranted){
+      // Do what you want with permission
+    } else if(status.isDenied){
+      // Show with this permission how you can improve
+    } else if(status.isPermanentlyDenied){
+      // Show dialog or open app setting for manual permission.
+    }
+  }
+
+
+  Future<void> requestCameraPermission() async {
+    var status = await Permission.camera.request();
+    if (status.isDenied) {
+      // Handle denied
+      showToast("Camera access denied");
+    } else if (status.isPermanentlyDenied) {
+      showToast("Camera access permanently denied");
+      // Permission permanently denied, show dialog or redirect to app settings
+    } else if (status.isGranted) {
+      showToast("Camera access granted");
+      // Proceed with camara related task.
+    }
   }
 
   void showToast(String message, {bool isError = false}) {
